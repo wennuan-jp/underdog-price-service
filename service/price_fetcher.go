@@ -12,6 +12,7 @@ import (
 	"humanpatch.com/underdog/asset-service/config"
 )
 
+// TODO: make sure this fetch logic not trigger automatically
 // FXLiveResponse represents the live exchange rates API response
 type FXLiveResponse struct {
 	Success   bool               `json:"success"`

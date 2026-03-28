@@ -1,4 +1,4 @@
-package main
+package model
 
 import (
 	"time"
@@ -13,13 +13,14 @@ const (
 )
 
 type PricePair struct {
-	ID          string
-	Name        string
-	AssetType   AssetType
-	Code        string
-	PriceInUSD  float64
-	LastUpdated time.Time
+	ID          string    `firestore:"id"`
+	Name        string    `firestore:"name"`
+	AssetType   AssetType `firestore:"asset_type"`
+	Code        string    `firestore:"code"`
+	PriceInUSD  float64   `firestore:"price_usd"`
+	LastUpdated time.Time `firestore:"last_updated"`
 }
+
 
 // type PriceSource interface {
 // 	ID          string

@@ -14,46 +14,62 @@ For example, this service will grab price of BTC, ETH, and CNY, etc. From differ
 To achieve real-time price updates for clients, we will use **Firebase Cloud Firestore**. Below is the step-by-step plan:
 
 ### 1. Setup Firebase Project
-- [ ] Create a new project in the [Firebase Console](https://console.firebase.google.com/).
-- [ ] Choose **Cloud Firestore** and create a database in your preferred region.
-- [ ] Set security rules (locked for now, as we use Admin SDK).
+- [x] Create a new project in the [Firebase Console](https://console.firebase.google.com/).
+- [x] Choose **Cloud Firestore** and create a database in your preferred region.
+- [x] Set security rules (locked for now, as we use Admin SDK).
 
 ### 2. Service Account Authentication
-- [ ] Go to Project Settings > Service Accounts.
-- [ ] Generate a new private key and save the JSON file as `_firebase_credentials.json` (ensure this is in `.gitignore`).
-- [ ] Set environment variable `GOOGLE_APPLICATION_CREDENTIALS` pointing to this file.
+- [x] Go to Project Settings > Service Accounts.
+- [x] Generate a new private key and save the JSON file as `_firebase_credentials.json` (ensure this is in `.gitignore`).
+- [x] Initialized by pointing to this file in `infra/firebase.go`.
 
 ### 3. Initialize Firebase Admin SDK
-- [ ] Install the Go SDK:
-  ```bash
-  go get firebase.google.com/go/v4
-  ```
-- [ ] Create `infra/firebase.go` to initialize the Firebase App and Firestore client.
+- [x] Install the Go SDK.
+- [x] Create `infra/firebase.go` to initialize the Firebase App and Firestore client.
+
 
 ### 4. Data Mapping & Structure
-- [ ] Decide on the collection structure (e.g., `prices` collection with asset IDs as document IDs).
-- [ ] Map `PricePair` struct to Firestore tags:
-  ```go
-  type PricePair struct {
-      ID          string    `firestore:"id"`
-      Name        string    `firestore:"name"`
-      AssetType   AssetType `firestore:"asset_type"`
-      Code        string    `firestore:"code"`
-      PriceInUSD  float64   `firestore:"price_usd"`
-      LastUpdated time.Time `firestore:"last_updated"`
-  }
-  ```
+- [x] Decide on the collection structure: Use a `prices` collection where each document ID is the asset `Code` (e.g., `USD`, `BTC`).
+- [x] Map `PricePair` struct to Firestore tags in `model/model.go`.
 
 ### 5. Implement Price Pushing Service
-- [ ] Create `service/firebase_service.go`.
-- [ ] Implement `UpdatePrice(ctx context.Context, price PricePair)` using `Set` with merge options.
+- [x] Create `service/firebase_service.go`.
+- [x] Implement `UpdatePrice(ctx context.Context, price model.PricePair)` using `Set` with merge options.
+
+
 
 ### 6. Integration in Main Loop
-- [ ] Update `main.go` to initialize Firebase on startup.
-- [ ] After fetching new prices, call `FirebaseService.UpdatePrice` for each asset.
+- [x] Update `main.go` to initialize Firebase on startup.
+- [x] After fetching new prices, call `FirebaseService.UpdatePrice` for each asset.
+
 
 ### 7. Verification
 - [ ] Monitor the Firebase Console to see real-time updates.
-- [ ] (Optional) Create a simple web/mobile client with a Firestore listener to verify the "automatic push" behavior.
+- [x] (Optional) Create a simple web/mobile client with a Firestore listener to verify the "automatic push" behavior.
+
+## Usage (HTTP API)
+The service now runs as an HTTP server on port `8080`.
+
+### Endpoints
+
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/health` | Check service status |
+| `POST` | `/v1/admin/refresh-supported` | Refresh supported currency names list |
+| `POST` | `/v1/price/sync-fx` | Fetch live FX rates and sync with Firebase |
+
+### Example Manual Sync
+
+**Sync FX Rates:**
+```bash
+curl -X POST http://localhost:8080/v1/price/sync-fx
+```
+
+**Refresh Currency Names:**
+```bash
+curl -X POST http://localhost:8080/v1/admin/refresh-supported
+```
+
+
 
 

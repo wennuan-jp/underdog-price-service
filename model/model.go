@@ -13,7 +13,6 @@ const (
 )
 
 type PricePair struct {
-	ID          string    `firestore:"id"`
 	Name        string    `firestore:"name"`
 	AssetType   AssetType `firestore:"asset_type"`
 	Code        string    `firestore:"code"`

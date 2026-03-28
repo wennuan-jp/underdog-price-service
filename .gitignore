@@ -1,2 +1,4 @@
 _secret
 _firebase_credentials.json
+config.yaml
+metadata.db
